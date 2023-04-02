@@ -1,21 +1,15 @@
-extern crate sail;
-extern crate serde_json;
+extern crate dotenv;
 
-use sail::{Request, Response};
-use serde_json::{Result, Value, json};
+use dotenv::dotenv;
 
 fn main() {
-  let req = Request {
-    method: String::from("GET"),
-    resource_path: String::from("/products"),
-    query_params: String::new(),
-    host: String::from("www.dummyjson.com"),
-    port: 443,
-  };
- 
-  let res: Response = sail::send(req);
+  dotenv().ok();
+  
+  let json: serde_json::Value = ureq::get("https://data.alpaca.markets/v2/stocks/TSLA/trades/latest")
+    .set("APCA-API-KEY-ID", &std::env::var("APCA_API_KEY_ID").unwrap())
+    .set("APCA-API-SECRET-KEY", &std::env::var("APCA_API_SECRET_KEY").unwrap())
+    .call().unwrap()
+    .into_json().unwrap();
 
-  let v: Value = serde_json::from_str(&res.body).unwrap();
-
-  println!("{}", serde_json::to_string_pretty(&v).unwrap());
+  println!("{}", serde_json::to_string_pretty(&json).unwrap());
 }
