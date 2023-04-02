@@ -1,7 +1,9 @@
 extern crate sail;
+extern crate serde_json;
 
 use sail::{Request, Response};
-  
+use serde_json::{Result, Value, json};
+
 fn main() {
   let req = Request {
     method: String::from("GET"),
@@ -13,6 +15,7 @@ fn main() {
  
   let res: Response = sail::send(req);
 
-  println!("{}", res.body);
+  let v: Value = serde_json::from_str(&res.body).unwrap();
 
+  println!("{}", serde_json::to_string_pretty(&v).unwrap());
 }
