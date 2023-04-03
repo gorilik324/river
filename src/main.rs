@@ -1,4 +1,4 @@
-use util::connect_to_stock_api;
+use utils::connect_to_stock_api;
 
 fn main() {
   let json = connect_to_stock_api();

@@ -4,7 +4,7 @@ version = "0.1.0"
 authors=["Jon Karrer <karrerjon@gmail.com>"]
 edition="2021"
 [lib]
-name="util"
+name="utils"
 path="src/lib.rs"
 
 [[bin]]
