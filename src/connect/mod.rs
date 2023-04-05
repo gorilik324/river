@@ -5,7 +5,6 @@ use serde::{Deserialize};
 use bar::Bar; 
 
 pub struct Query {
-    pub api_type: String, // Required, make Enum
     pub stock_symbol: String,
     pub query_string: String
 }
@@ -19,13 +18,17 @@ impl Query {
       let id_key = ("APCA-API-KEY-ID", &std::env::var("APCA_API_KEY_ID").unwrap()); 
       let secret_key = ("APCA-API-SECRET-KEY", &std::env::var("APCA_API_SECRET_KEY").unwrap());
       let base_url = "https://data.alpaca.markets/v2/stocks";
-      let Self {api_type, stock_symbol, query_string } = &self;
-      let path = format!("{base_url}/{stock_symbol}/{api_type}?{query_string}");
+      let Self {stock_symbol, query_string } = &self;
+      let path = format!("{base_url}/{stock_symbol}/bars?{query_string}");
 
       #[derive(Deserialize)]
       struct BarTypeResponse {
           bars: Vec<Bar>,
+          symbol: String,
+          next_page_token: Option<String>
       }
+
+      //TODO handle edge case of no bars being returned
       let res: BarTypeResponse = ureq::get(&path)
         .set(id_key.0, id_key.1)
         .set(secret_key.0, secret_key.1)
