@@ -1,10 +1,6 @@
-use utils::Query;
+use river::get_bars_for_stock;
 
 fn main() {
-    let query = Query {
-        stock_symbol: String::from("SO"),
-        query_string: String::from("timeframe=1Week&start=2023-01-01")
-    };
-  let json = query.get_bars();
-  println!("{:?}", json[0]);
+    let bars = get_bars_for_stock("SO", "timeframe=1Week&start=2023-01-01");
+    println!("{:?}", bars);
 }

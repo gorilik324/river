@@ -161,16 +161,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "river"
-version = "0.1.0"
-dependencies = [
- "dotenv",
- "serde",
- "serde_json",
- "ureq",
-]
-
-[[package]]
 name = "rustls"
 version = "0.20.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -234,6 +224,16 @@ name = "spin"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
+
+[[package]]
+name = "stock_market_bot"
+version = "0.1.0"
+dependencies = [
+ "dotenv",
+ "serde",
+ "serde_json",
+ "ureq",
+]
 
 [[package]]
 name = "syn"

@@ -1,3 +1,3 @@
-mod connect;
+mod api_tools;
 
-pub use connect::Query;
+pub use api_tools::get_bars_for_stock;

@@ -1,11 +1,11 @@
 [package]
-name = "river"
+name = "stock_market_bot"
 version = "0.1.0"
 authors=["Jon Karrer <karrerjon@gmail.com>"]
 edition="2021"
 
 [lib]
-name="utils"
+name="river"
 path="src/lib.rs"
 
 [[bin]]
