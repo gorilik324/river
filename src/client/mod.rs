@@ -6,10 +6,10 @@ use ureq::{Request};
 use serde::Deserialize;
 
 pub struct Query {
-  pub stock_symbol: String, // Required
-  pub timeframe: String, // Required, make Enum
-  pub start_time: Option<String>, // Optional
-  pub end_time: Option<String>, // Optional
+    pub stock_symbol: String, // Required
+    pub timeframe: String, // Required, make Enum
+    pub start_time: Option<String>, // Optional
+    pub end_time: Option<String>, // Optional
 }
 
 impl Query {
@@ -41,7 +41,9 @@ impl Client {
     }
 
     pub fn get_bars(query: Query) -> Vec<Bar> {
-        let address = format!("{}/{}/bars{}", Self::BASE_URL, query.stock_symbol, query.formatted_string());
+        let symbol = query.stock_symbol;
+        let query_string = query.formatted_string();
+        let address = format!("{}/{symbol}/bars{query_string}", Self::BASE_URL);
 
         #[derive(Deserialize)]
         struct Bars {
