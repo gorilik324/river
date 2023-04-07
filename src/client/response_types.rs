@@ -13,15 +13,13 @@ pub struct Bar {
     pub vw: f32,   // Volume weighted average
 }
 
-
 #[derive(Deserialize)]
 pub struct Trade {
-  t: String,
-  x: String,
-  p: f32,
-  s: i32,
-  c: [String; 2],
-  i: u32,
-  z: String
+    t: String,
+    x: String,
+    p: f32,
+    s: i32,
+    c: [String; 2],
+    i: u32,
+    z: String,
 }
-

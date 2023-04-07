@@ -1,36 +1,40 @@
 mod response_types;
 
 use dotenv::dotenv;
-use response_types::{Bar};
-use ureq::{Request};
+use response_types::Bar;
 use serde::Deserialize;
+use ureq::Request;
 
 pub struct Query {
-    pub stock_symbol: String, // Required
-    pub timeframe: String, // Required, make Enum
+    pub stock_symbol: String,       // Required
+    pub timeframe: String,          // Required, make Enum
     pub start_time: Option<String>, // Optional
-    pub end_time: Option<String>, // Optional
+    pub end_time: Option<String>,   // Optional
 }
-
 impl Query {
-    pub fn formatted_string(&self) -> String {
-        let mut query_string = format!("?timeframe={}", self.timeframe);
-
+    fn query_string(&self) -> String {
+        let mut query_string = format!("timeframe={}", self.timeframe);
         if let Some(start) = &self.start_time {
             query_string.push_str(&format!("&start={}", start));
         }
-
         if let Some(end) = &self.end_time {
-            query_string.push_str(&format!("&end={}",end));
+            query_string.push_str(&format!("&end={}", end));
         }
-
         query_string
     }
+
+    fn build_address_for(&self, api_type: &str) -> String {
+        let base_url = "https://data.alpaca.markets/v2/stocks";
+        format!(
+            "{base_url}/{}/{api_type}?{}",
+            self.stock_symbol,
+            self.query_string()
+        )
+    }
 }
+
 pub struct Client;
 impl Client {
-    const BASE_URL: &str = "https://data.alpaca.markets/v2/stocks";
-
     fn request(method: &str, address: &str) -> Request {
         dotenv().ok();
         let id_key = std::env::var("APCA_API_KEY_ID").expect("API Id Key Not Found");
@@ -40,17 +44,14 @@ impl Client {
             .set("APCA-API-SECRET-KEY", &secret_key)
     }
 
-    pub fn get_bars(query: Query) -> Vec<Bar> {
-        let symbol = query.stock_symbol;
-        let query_string = query.formatted_string();
-        let address = format!("{}/{symbol}/bars{query_string}", Self::BASE_URL);
-
+    pub fn get_bars(q: Query) -> Vec<Bar> {
         #[derive(Deserialize)]
         struct Bars {
             bars: Option<Vec<Bar>>,
             symbol: String,
             next_page_token: Option<String>,
         }
+        let address = q.build_address_for("bars");
         let res: Bars = Self::request("GET", &address)
             .call()
             .expect("Could Not Call API")
@@ -60,4 +61,3 @@ impl Client {
         res.bars.expect("No Bars In Response")
     }
 }
-
