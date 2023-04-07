@@ -1,7 +1,13 @@
-use river::Client;
+use river::{Client, Query};
 
 fn main() {
 
-    let bars = Client::get_bars_for_stock("SO", "timeframe=1Week&start=2023-01-01");
+    let query = Query {
+      stock_symbol: String::from("SO"), // Required
+      timeframe: String::from("1Week"), // Required, make Enum
+      start_time: Some(String::from("2023-01-01")), // Optional
+      end_time: None, // Optional
+    };
+    let bars = Client::get_bars(query);
     println!("{:?}", bars);
 }

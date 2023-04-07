@@ -13,10 +13,15 @@ pub struct Bar {
     pub vw: f32,   // Volume weighted average
 }
 
-// This is the api response structure for getting bars
+
 #[derive(Deserialize)]
-pub struct BarsResponse {
-    pub bars: Option<Vec<Bar>>,
-    pub symbol: String,
-    pub next_page_token: Option<String>,
+pub struct Trade {
+  t: String,
+  x: String,
+  p: f32,
+  s: i32,
+  c: [String; 2],
+  i: u32,
+  z: String
 }
+
