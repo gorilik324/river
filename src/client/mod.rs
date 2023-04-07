@@ -1,5 +1,7 @@
+mod response_types;
+
 use dotenv::dotenv;
-use serde::Deserialize;
+use response_types::{Bar, BarsResponse};
 
 pub struct Client {
     base_url: String,
@@ -24,15 +26,8 @@ impl Client {
     }
 
     pub fn get_bars_for_stock(&self, stock_symbol: &str, query_string: &str) -> Vec<Bar> {
-        #[derive(Deserialize)]
-        struct BarsResponse {
-            bars: Option<Vec<Bar>>,
-            symbol: String,
-            next_page_token: Option<String>,
-        }
-   
-        let path = format!("{}/{stock_symbol}/bars?{query_string}", &self.base_url);
-        let res: BarsResponse = ureq::get(&path)
+        let address = format!("{}/{stock_symbol}/bars?{query_string}", &self.base_url);
+        let res: BarsResponse = ureq::get(&address)
             .set(&self.id_key.0, &self.id_key.1)
             .set(&self.secret_key.0, &self.secret_key.1)
             .call()
@@ -44,14 +39,3 @@ impl Client {
     }
 }
 
-#[derive(Deserialize, Debug)]
-pub struct Bar {
-    t: String, // Timestamp
-    o: f32,    // Open
-    h: f32,    // High
-    l: f32,    // Low
-    c: f32,    // Close
-    v: i32,    // Volume
-    n: i32,    // Number of trades
-    vw: f32,   // Volume weighted average
-}
