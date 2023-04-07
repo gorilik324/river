@@ -1,36 +1,32 @@
-mod response_types;
+mod query;
 
 use dotenv::dotenv;
-use response_types::Bar;
+pub use query::Query;
 use serde::Deserialize;
 use ureq::Request;
 
-pub struct Query {
-    pub stock_symbol: String,       // Required
-    pub timeframe: String,          // Required, make Enum
-    pub start_time: Option<String>, // Optional
-    pub end_time: Option<String>,   // Optional
+// A Bar is a candle in stock market terms
+#[derive(Deserialize, Debug)]
+pub struct Bar {
+    pub t: String, // Timestamp
+    pub o: f32,    // Open
+    pub h: f32,    // High
+    pub l: f32,    // Low
+    pub c: f32,    // Close
+    pub v: i32,    // Volume
+    pub n: i32,    // Number of trades
+    pub vw: f32,   // Volume weighted average
 }
-impl Query {
-    fn query_string(&self) -> String {
-        let mut query_string = format!("timeframe={}", self.timeframe);
-        if let Some(start) = &self.start_time {
-            query_string.push_str(&format!("&start={}", start));
-        }
-        if let Some(end) = &self.end_time {
-            query_string.push_str(&format!("&end={}", end));
-        }
-        query_string
-    }
 
-    fn build_address_for(&self, api_type: &str) -> String {
-        let base_url = "https://data.alpaca.markets/v2/stocks";
-        format!(
-            "{base_url}/{}/{api_type}?{}",
-            self.stock_symbol,
-            self.query_string()
-        )
-    }
+#[derive(Deserialize)]
+pub struct Trade {
+    t: String,
+    x: String,
+    p: f32,
+    s: i32,
+    c: [String; 2],
+    i: u32,
+    z: String,
 }
 
 pub struct Client;
