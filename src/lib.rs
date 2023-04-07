@@ -1,3 +1,3 @@
-mod api_tools;
+mod client;
 
-pub use api_tools::get_bars_for_stock;
+pub use client::Client;
