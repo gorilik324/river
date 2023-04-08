@@ -13,6 +13,13 @@ pub struct Bar {
     pub vw: f32,   // Volume weighted average
 }
 
+#[derive(Debug)]
+pub enum Trend {
+    Bullish,
+    Bearish,
+    Neutral
+}
+
 pub struct BarGraph {
     vec: Vec<Bar>
 }
@@ -58,4 +65,18 @@ impl BarGraph {
         candle_type
     }
 
+    pub fn macro_trend(self) -> Trend {
+        if self.vec.len() < 2 {
+            return Trend::Neutral;
+        }
+
+        let start = self.vec.first().unwrap();
+        let end = self.vec.last().unwrap();
+
+        if start.c > end.c {
+            return Trend::Bullish;
+        } else {
+            return Trend::Bearish;
+        }
+    }
 }
