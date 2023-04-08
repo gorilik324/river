@@ -1,19 +1,22 @@
+// Build the queries that are passed to the api through
+// ... the query string params.j
+
 pub struct Query {
-    pub stock_symbol: String,       // Required
-    pub timeframe: String,          // Required, make Enum
-    pub start_time: Option<String>, // Optional
-    pub end_time: Option<String>,   // Optional
+    pub stock_symbol: String,
+    pub timeframe: String,
+    pub start_time: Option<String>,
+    pub end_time: Option<String>,
 }
 impl Query {
     fn query_string(&self) -> String {
-        let mut query_string = format!("timeframe={}", self.timeframe);
+        let mut args = format!("timeframe={}", self.timeframe);
         if let Some(start) = &self.start_time {
-            query_string.push_str(&format!("&start={}", start));
+            args.push_str(&format!("&start={}", start));
         }
         if let Some(end) = &self.end_time {
-            query_string.push_str(&format!("&end={}", end));
+            args.push_str(&format!("&end={}", end));
         }
-        query_string
+        args
     }
 
     pub fn build_address_for(&self, api_type: &str) -> String {
