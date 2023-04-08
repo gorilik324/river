@@ -9,7 +9,7 @@ fn main() {
     };
     let bars = Client::get_bars(query);
 
-    println!("{:?}", bars.signal_and_close());
+    dbg!(bars.macro_trend());
 //- Order Blocks
 
 //- The last oposite action before a huge move. So if all sells (bear), find the last high (bull) candle. Can be a bearish order block or bullish order block.
