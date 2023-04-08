@@ -31,6 +31,26 @@ pub struct OrderBlock {
 
 pub struct BarSet;
 impl BarSet {
+    fn all_highs(bars: &[Bar]) -> Vec<f32> {
+        let mut highs = Vec::new();
+
+        for bar in bars.iter() {
+            highs.push(bar.h)
+        }
+
+        return highs;
+    }
+
+    fn all_lows(bars: &[Bar]) -> Vec<f32> {
+        let mut lows = Vec::new();
+
+        for bar in bars.iter() {
+            lows.push(bar.l)
+        }
+
+        return lows;
+    }
+
     fn all_closes(bars: &[Bar]) -> Vec<f32> {
         let mut closes = Vec::new();
 
@@ -51,7 +71,7 @@ impl BarSet {
         opens
     }
 
-    pub fn candle_trends(bars: &[Bar]) -> Vec<Trend> {
+    pub fn bar_trends(bars: &[Bar]) -> Vec<Trend> {
         let mut candle_type = Vec::new();
 
         for bar in bars.iter() {
@@ -67,7 +87,7 @@ impl BarSet {
         candle_type
     }
 
-    pub fn graph_trend(bars: &[Bar]) -> Trend {
+    pub fn calc_trend_for_bars(bars: &[Bar]) -> Trend {
         if bars.len() < 2 {
             return Trend::Neutral;
         }
@@ -82,28 +102,64 @@ impl BarSet {
         }
     }
 
+    pub fn first_bar_before_streak(bar_trends: &[Trend]) -> usize {
+        // Find first element before the start of the streak
+        let mut streak_start = 0;
+        let mut streak_count = 0;
+        let mut max_streak_start = 0;
+        let mut max_streak_count = 0;
+
+        for (i, trend) in bar_trends.iter().enumerate() {
+            if *trend == Trend::Bearish {
+                if streak_count == 0 {
+                    streak_start = i;
+                }
+                streak_count += 1;
+            } else {
+                if streak_count > max_streak_count {
+                    max_streak_count = streak_count;
+                    max_streak_start = streak_start;
+                }
+                streak_count = 0;
+            }
+        }
+
+        if streak_count > max_streak_count {
+            max_streak_count = streak_count;
+            max_streak_start = streak_start;
+        }
+
+        let start_index = max_streak_start - 1;
+        // println!("Biggest consecutive streak: {}", max_streak_count);
+        // println!("Starting index of first element before the streak started: {}", start_index);
+        start_index
+    }
+
     pub fn order_block(bars: &[Bar]) -> OrderBlock {
         //- The last oposite action before a huge move. So if all sells (bear), find the last high (bull) candle.
         //... can be a bearish order block or bullish order block.
         //- Bear Order block = Bull action before the bear move
         //- Bull Order Block = Bear action before the bull move
-
-        let trend_of_graph = Self::graph_trend(&bars);
-
-        let bar: &Bar = &bars[0];
+        let overall_trend = Self::calc_trend_for_bars(&bars);
+        let bar_trends = Self::bar_trends(&bars);
+        let order_block_index = Self::first_bar_before_streak(&bar_trends);
+        let bar: &Bar = &bars[order_block_index];
         let diff = (bar.o - bar.c) * 0.5;
-
+        let order_block_trend = match overall_trend {
+            Trend::Bearish => Trend::Bullish,
+            _=> Trend::Bearish
+        };
+        //- Rejection Block = Close of either Order block
+        //- Low of the Bear Order block is significant
+        //- High of the Bull order block is significant
+        //- Mean threshold is the 50% of that opposite action either Order Block
         OrderBlock {
-            trend: trend_of_graph,
+            trend: order_block_trend,
             close: bar.c,
             high: bar.h,
             low: bar.l,
             mean_threshold: diff
         }
-        //- Rejection Block = Close of either Order block
-        //- Low of the Bear Order block is significant
-        //- High of the Bull order block is significant
-        //- Mean threshold is the 50% of that opposite action either Order Block
         //- If an order block gets traded through, or blown through, or broken, or not adhered to,
         //... it can become the opposite Order Block.
     }
