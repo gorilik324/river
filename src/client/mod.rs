@@ -1,11 +1,11 @@
 mod query;
-mod bar;
+pub mod bar;
 
 use dotenv::dotenv;
 pub use query::Query;
 use serde::Deserialize;
 use ureq::Request;
-use bar::{BarGraph, Bar};
+use bar::{Bar};
 
 pub struct Client;
 impl Client {
@@ -18,7 +18,7 @@ impl Client {
             .set("APCA-API-SECRET-KEY", &secret_key)
     }
 
-    pub fn get_bars(q: Query) -> BarGraph {
+    pub fn get_bars(q: Query) -> Vec<Bar> {
         #[derive(Deserialize)]
         struct Res {
             bars: Option<Vec<Bar>>,
@@ -32,9 +32,6 @@ impl Client {
             .into_json()
             .expect("Could Not Parse Response Into Json");
 
-        match r.bars {
-            Some(bars) => return BarGraph::from(bars),
-            _=> panic!("No Bars In Response")
-        }
+        r.bars.expect("No Bars In Response")
     }
 }

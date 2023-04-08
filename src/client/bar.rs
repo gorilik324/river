@@ -13,70 +13,98 @@ pub struct Bar {
     pub vw: f32,   // Volume weighted average
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Trend {
     Bullish,
     Bearish,
     Neutral
 }
 
-pub struct BarGraph {
-    vec: Vec<Bar>
+#[derive(Debug)]
+pub struct OrderBlock {
+    trend: Trend,
+    close: f32,
+    high: f32,
+    low: f32,
+    mean_threshold: f32
 }
 
-impl BarGraph {
-    pub fn from(vec: Vec<Bar>) -> BarGraph {
-        Self {vec}
-    }
-
-    fn all_closes(self) -> Vec<f32> {
+pub struct BarSet;
+impl BarSet {
+    fn all_closes(bars: &[Bar]) -> Vec<f32> {
         let mut closes = Vec::new();
 
-        for bar in self.vec.iter() {
+        for bar in bars.iter() {
             closes.push(bar.c)
         }
 
         return closes;
     }
 
-    pub fn all_opens(self) -> Vec<f32> {
+    pub fn all_opens(bars: &[Bar]) -> Vec<f32> {
         let mut opens = Vec::new();
 
-        for bar in self.vec.iter() {
+        for bar in bars.iter() {
             opens.push(bar.o)
         }
 
         opens
     }
 
-    pub fn signal_and_close(self) -> Vec<(bool, f32)> {
+    pub fn candle_trends(bars: &[Bar]) -> Vec<Trend> {
         let mut candle_type = Vec::new();
 
-        for bar in self.vec.iter() {
+        for bar in bars.iter() {
             let signal = bar.c - bar.o;
 
             if signal > 0.0 {
-                candle_type.push((true, bar.c))
+                candle_type.push(Trend::Bullish)
             } else {
-                candle_type.push((false, bar.c))
+                candle_type.push(Trend::Bearish)
             }
         }
 
         candle_type
     }
 
-    pub fn macro_trend(self) -> Trend {
-        if self.vec.len() < 2 {
+    pub fn graph_trend(bars: &[Bar]) -> Trend {
+        if bars.len() < 2 {
             return Trend::Neutral;
         }
 
-        let start = self.vec.first().unwrap();
-        let end = self.vec.last().unwrap();
+        let start = bars.first().unwrap();
+        let end = bars.last().unwrap();
 
         if start.c > end.c {
             return Trend::Bullish;
         } else {
             return Trend::Bearish;
         }
+    }
+
+    pub fn order_block(bars: &[Bar]) -> OrderBlock {
+        //- The last oposite action before a huge move. So if all sells (bear), find the last high (bull) candle.
+        //... can be a bearish order block or bullish order block.
+        //- Bear Order block = Bull action before the bear move
+        //- Bull Order Block = Bear action before the bull move
+
+        let trend_of_graph = Self::graph_trend(&bars);
+
+        let bar: &Bar = &bars[0];
+        let diff = (bar.o - bar.c) * 0.5;
+
+        OrderBlock {
+            trend: trend_of_graph,
+            close: bar.c,
+            high: bar.h,
+            low: bar.l,
+            mean_threshold: diff
+        }
+        //- Rejection Block = Close of either Order block
+        //- Low of the Bear Order block is significant
+        //- High of the Bull order block is significant
+        //- Mean threshold is the 50% of that opposite action either Order Block
+        //- If an order block gets traded through, or blown through, or broken, or not adhered to,
+        //... it can become the opposite Order Block.
     }
 }
