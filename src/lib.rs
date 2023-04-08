@@ -1,3 +1,3 @@
 mod client;
 
-pub use client::{Query, *};
+pub use client::*;
