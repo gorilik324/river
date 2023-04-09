@@ -88,6 +88,7 @@ impl BarSet {
     }
 
     pub fn calc_trend_for_bars(bars: &[Bar]) -> Trend {
+      // Wrong signal for BTU
         if bars.len() < 2 {
             return Trend::Neutral;
         }
@@ -141,24 +142,23 @@ impl BarSet {
         //- Bear Order block = Bull action before the bear move
         //- Bull Order Block = Bear action before the bull move
         let overall_trend = Self::calc_trend_for_bars(&bars);
+        dbg!(&overall_trend);
         let bar_trends = Self::bar_trends(&bars);
+        dbg!(&bar_trends);
         let order_block_index = Self::first_bar_before_streak(&bar_trends);
         let bar: &Bar = &bars[order_block_index];
-        let diff = (bar.o - bar.c) * 0.5;
-        let order_block_trend = match overall_trend {
-            Trend::Bearish => Trend::Bullish,
-            _=> Trend::Bearish
-        };
+        dbg!(bar);
+        let mean_threshold = (bar.h - bar.l) * 0.5;
         //- Rejection Block = Close of either Order block
         //- Low of the Bear Order block is significant
         //- High of the Bull order block is significant
         //- Mean threshold is the 50% of that opposite action either Order Block
         OrderBlock {
-            trend: order_block_trend,
+            trend: overall_trend,
             close: bar.c,
             high: bar.h,
             low: bar.l,
-            mean_threshold: diff
+            mean_threshold
         }
         //- If an order block gets traded through, or blown through, or broken, or not adhered to,
         //... it can become the opposite Order Block.

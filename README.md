@@ -27,11 +27,16 @@
         - Bear Order block = Bull action before the bear move
         - Bull Order Block = Bear action before the bull move
         - Rejection Block = Close of either Order block
-        - Low of the Bear Order block is significant
-        - High of the Bull order block is significant
         - Mean threshold is the 50% of that opposite action either Order Block
         - If an order block gets traded through, or blown through, or broken, or not adhered to, it can become the opposite Order Block.
-        - In math terms:
+
+      - Order Blocks II
+
+        - Find all order blocks
+        - Fix the macro trend problem
+        - Which high or low will be taken out next.
+        - Low of the Bull Order block is significant
+        - High of the Bear order block is significant
 
       - Fair Value Gap
       - Breakers
