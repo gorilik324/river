@@ -160,7 +160,5 @@ impl BarSet {
             low: bar.l,
             mean_threshold
         }
-        //- If an order block gets traded through, or blown through, or broken, or not adhered to,
-        //... it can become the opposite Order Block.
     }
 }
