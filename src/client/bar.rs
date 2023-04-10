@@ -95,11 +95,10 @@ impl BarSet {
 
         let start = bars.first().unwrap();
         let end = bars.last().unwrap();
-
         if start.c > end.c {
-            return Trend::Bullish;
-        } else {
             return Trend::Bearish;
+        } else {
+            return Trend::Bullish;
         }
     }
 
