@@ -33,10 +33,16 @@
       - Order Blocks II
 
         - Find all order blocks
-        - Fix the macro trend problem
-        - Which high or low will be taken out next.
+        - ! Fix the macro trend problem
         - Low of the Bull Order block is significant
         - High of the Bear order block is significant
+        - Find Highs and lows of the spread
+        - The most significant blocks are the ones that are closer to the most recent price, usually the most recent block.
+        - The most significant ones are closer to price in general.
+        - Find an order block on the upper side and lower side of the spectrum. A bearish and bullish block.
+        - An order block's low/high also NEEDS to be broken by the next series of blocks.
+        - Identify the high of the session of and low of the session, weekly.
+        - As long as price moves away, its a block.
 
       - Fair Value Gap
       - Breakers
