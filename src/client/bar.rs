@@ -17,7 +17,7 @@ pub struct Bar {
 pub enum Trend {
     Bullish,
     Bearish,
-    Neutral
+    Neutral,
 }
 
 #[derive(Debug)]
@@ -26,7 +26,7 @@ pub struct OrderBlock {
     close: f32,
     high: f32,
     low: f32,
-    mean_threshold: f32
+    mean_threshold: f32,
 }
 
 pub struct BarSet;
@@ -88,7 +88,7 @@ impl BarSet {
     }
 
     pub fn calc_trend_for_bars(bars: &[Bar]) -> Trend {
-      // Wrong signal for BTU
+        // Wrong signal for BTU
         if bars.len() < 2 {
             return Trend::Neutral;
         }
@@ -158,7 +158,7 @@ impl BarSet {
             close: bar.c,
             high: bar.h,
             low: bar.l,
-            mean_threshold
+            mean_threshold,
         }
     }
 }
