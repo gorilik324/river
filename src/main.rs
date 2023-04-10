@@ -1,13 +1,16 @@
 use river::{Client, Query, bar::BarSet};
 
-fn main() {
-    let query = Query {
-        stock_symbol: String::from("TSLA"),
-        timeframe: String::from("1Week"),
-        start_time: Some(String::from("2023-01-01")),
-        end_time: None,
-    };
-    let bars = Client::get_bars(query);
+pub fn simple_moving_average(spread: &[f32]) -> f32 {
+    // Sum the spread
+    let mut sum = 0.0;
+    for number in spread {
+        sum += number
+    }
 
-    dbg!(BarSet::order_block(&bars));
+    // Divide by the length of the spread
+    sum / spread.len() as f32
+}
+fn main() {
+    let sma = simple_moving_average(&[23.2, 26.9, 32.88, 43.321, 20.0]);
+    println!("{sma}");
 }
