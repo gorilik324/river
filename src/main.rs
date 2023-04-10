@@ -35,26 +35,27 @@ fn standard_deviation(values: &[f32]) -> f32 {
 }
 
 pub fn bollinger_bands(spread: &[f32]) -> (f32, f32, f32) {
-    // * Get 40 days of data, need first 20 for first data point.
     let mut upper_band = 0.0;
     let mut lower_band = 0.0;
     let mut middle_band = 0.0;
+
+    // * Period has to be half the amount of data points.
     let period: usize = spread.len() / 2;
 
     for i in period..spread.len() {
         // * Progressivly "climb up" the arrray one value at a time
+        // .. the "window" size is 20
         let offset = &i - &period;
-        let prices = &spread[offset..20];
+        let prices = &spread[offset..spread.len()];
         let mean = simple_moving_average(&prices);
         let std_dev = standard_deviation(&prices);
 
         // * Get the plot point of this current target slice
         let k = std_dev * 2.0;
-
         let upper_plot = mean + k;
         let bottom_plot = mean - k;
 
-        // * When the last number is hit. Used to calculate BBtrend.
+        // * When the last number is hit, set the values
         if spread.len() - &i == 1 {
           upper_band = upper_plot;
           middle_band = mean;
