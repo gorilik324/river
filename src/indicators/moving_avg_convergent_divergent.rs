@@ -3,21 +3,49 @@ use crate::indicators::exponential_moving_average;
 pub fn moving_avg_convergent_divergent(spread: &[f32]) -> (Vec<f32>, f32) {
     let mut macd_line = Vec::new();
 
+    // Using the last 9 values in the spread, fill the MACD vec.
     for i in 0..9 {
-      // * Remove the last element in array on each loop through.
-      let slice_length = spread.len() - i;
+        // Need to walk backwards through the spread to get present day MACD line.
+        // * Full length, full length - 1, full length -2, etc...
+        let target_prices = &spread[0..spread.len() - i];
 
-      let target_prices = &spread[0..slice_length];
+        // MACD line = 12-period EMA - 26-period EMA
+        let short_period = exponential_moving_average(&target_prices, 12);
+        let long_period = exponential_moving_average(&target_prices, 26);
+        let macd = short_period - long_period;
 
-      let short_period = exponential_moving_average(&target_prices[target_prices.len() - 12..], 12);
-
-      let long_period = exponential_moving_average(&target_prices[target_prices.len() - 24..], 24);
-
-      let diff = short_period - long_period;
-
-      macd_line.insert(0, diff);
+        // Place value at the start of the vec on each loop. This ensures
+        // ... that the most recent MACD point is at the end of the vec.
+        macd_line.insert(0, macd);
     }
 
     let signal_line = exponential_moving_average(&macd_line, 9);
     return (macd_line, signal_line);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_macd_result() {
+        // Data from BTU, weekly bars, Mon Aug 08, 22 -> Mon Apr 10, 23
+        // ... used trading view chart and indicator.
+        let data: Vec<f32> = vec![
+            35.56, 34.96, 33.72, 32.89, 34.36, 33.06, 31.05, 30.36,
+            30.89, 31.01, 32.19, 34.19, 33.91, 35.87, 35.37, 36.11,
+            35.93, 34.53, 33.70, 33.95, 34.20, 35.38, 36.12, 35.35,
+            36.25, 36.59, 36.49, 36.39, 35.66, 35.99, 32.93, 30.98,
+            30.99, 32.15, 31.99, 32.34
+        ];
+
+        let result = moving_avg_convergent_divergent(&data);
+        dbg!(&result);
+
+        // These are the values trading view had
+        let expect = (vec![0.6227, 0.5839, 0.5731, 0.3140, -0.0481,
+            -0.3305, -0.4554, -0.5608, -0.6079], -0.1712);
+        assert_eq!(result, expect);
+    }
+
 }
