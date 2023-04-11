@@ -1,11 +1,11 @@
-mod query;
 pub mod bar;
+mod query;
 
+use bar::Bar;
 use dotenv::dotenv;
 pub use query::Query;
 use serde::Deserialize;
 use ureq::Request;
-use bar::{Bar};
 
 pub struct Client;
 impl Client {
