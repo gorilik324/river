@@ -1,4 +1,4 @@
-use crate::indicators::{standard_deviation, simple_moving_average};
+use crate::indicators::{simple_moving_average, standard_deviation};
 
 pub fn bollinger_bands(spread: &[f32]) -> (f32, f32, f32) {
     let mut upper_band = 0.0;

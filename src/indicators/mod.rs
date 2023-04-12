@@ -15,6 +15,3 @@ pub use self::moving_avg_convergent_divergent::moving_avg_convergent_divergent;
 
 mod bollinger_bands;
 pub use self::bollinger_bands::bollinger_bands;
-
-
-
