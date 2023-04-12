@@ -1,47 +1,39 @@
+fn calc_mean(spread: &[f32]) -> f32 {
+    let mut sum = 0.0;
+    for i in spread {
+        sum+=i
+    }
+    sum / spread.len() as f32
+}
 pub fn relative_strength_index(spread: &[f32]) -> Vec<f32> {
+    // 100 - (100/ 1+(avg_gain/avg_loss))
     let period = 14;
     let mut gains = Vec::new();
     let mut losses = Vec::new();
-    let mut last_price = 0.0;
-    let mut rsi_values = Vec::new();
 
-    for (i, price) in spread.iter().enumerate() {
-        if i == 0 {
-            last_price = *price;
-            continue;
-        }
-
-        let change = price - last_price;
-
-        if change > 0.0 {
-            gains.push(change);
+    // Remove last value, -1, as not to overflow the indexing
+    for i in 0..spread.len() - 1 {
+        let diff = &spread[i + 1] - &spread[i];
+        if diff > 0.0 {
+            gains.push(diff);
             losses.push(0.0);
-        } else if change < 0.0 {
-            gains.push(0.0);
-            losses.push(change.abs());
         } else {
+            losses.push(diff.abs());
             gains.push(0.0);
-            losses.push(0.0);
         }
-
-        if i >= period {
-            let avg_gain = gains[i - period..i].iter().sum::<f32>() / period as f32;
-            let avg_loss = losses[i - period..i].iter().sum::<f32>() / period as f32;
-
-            let rs = if avg_loss == 0.0 {
-                1.0
-            } else {
-                avg_gain / avg_loss
-            };
-
-            let rsi = 100.0 - (100.0 / (1.0 + rs));
-            rsi_values.push(rsi);
-        }
-
-        last_price = *price;
     }
 
-    rsi_values
+    let mut rsi_line = Vec::new();
+    let iterations = spread.len() - period;
+
+    for i in 0..iterations {
+        let avg_gain = calc_mean(&gains[i..14+i]);
+        let avg_loss = calc_mean(&losses[i..14+i]);
+        let rsi = 100.0 - (100.0/(1.0 + (avg_gain / avg_loss)));
+        rsi_line.push(rsi);
+    }
+
+    rsi_line
 }
 
 
