@@ -1,7 +1,7 @@
 fn calc_mean(spread: &[f32]) -> f32 {
     let mut sum = 0.0;
     for i in spread {
-        sum+=i
+        sum += i
     }
     sum / spread.len() as f32
 }
@@ -27,16 +27,14 @@ pub fn relative_strength_index(spread: &[f32]) -> Vec<f32> {
     let iterations = spread.len() - period;
 
     for i in 0..iterations {
-        let avg_gain = calc_mean(&gains[i..14+i]);
-        let avg_loss = calc_mean(&losses[i..14+i]);
-        let rsi = 100.0 - (100.0/(1.0 + (avg_gain / avg_loss)));
+        let avg_gain = calc_mean(&gains[i..14 + i]);
+        let avg_loss = calc_mean(&losses[i..14 + i]);
+        let rsi = 100.0 - (100.0 / (1.0 + (avg_gain / avg_loss)));
         rsi_line.push(rsi);
     }
 
     rsi_line
 }
-
-
 
 #[cfg(test)]
 mod tests {
@@ -52,7 +50,11 @@ mod tests {
 
         let result = relative_strength_index(&data);
         dbg!(&result);
-        let expect = vec![23.0, 22.0];
+        let expect = vec![
+            49.35417, 53.87206, 58.01305, 55.710304, 47.594753, 53.512234, 64.43631, 72.01755,
+            72.5237, 67.69983, 66.944916, 61.62791, 62.721905, 53.140102, 51.70388, 49.259266,
+            36.338802, 34.605385, 37.34827, 42.254738, 40.41631, 35.794403,
+        ];
 
         assert_eq!(result, expect);
     }
