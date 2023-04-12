@@ -1,18 +1,49 @@
-pub fn relative_strength_index(spread: &[f32], period: usize) -> Vec<f32> {
-    // How many times can this be looped through
-    let iterations = spread.len() / period;
+pub fn relative_strength_index(spread: &[f32]) -> Vec<f32> {
+    let period = 14;
+    let mut gains = Vec::new();
+    let mut losses = Vec::new();
+    let mut last_price = 0.0;
+    let mut rsi_values = Vec::new();
 
-    for i in 0..iterations {
-        let start = period * i;
-        let end = period * (i + 1);
-        let target_spread = &spread[start..end];
+    for (i, price) in spread.iter().enumerate() {
+        if i == 0 {
+            last_price = *price;
+            continue;
+        }
 
-        let mut gains = 0.0;
-        let mut losses = 0.0;
+        let change = price - last_price;
 
+        if change > 0.0 {
+            gains.push(change);
+            losses.push(0.0);
+        } else if change < 0.0 {
+            gains.push(0.0);
+            losses.push(change.abs());
+        } else {
+            gains.push(0.0);
+            losses.push(0.0);
+        }
+
+        if i >= period {
+            let avg_gain = gains[i - period..i].iter().sum::<f32>() / period as f32;
+            let avg_loss = losses[i - period..i].iter().sum::<f32>() / period as f32;
+
+            let rs = if avg_loss == 0.0 {
+                1.0
+            } else {
+                avg_gain / avg_loss
+            };
+
+            let rsi = 100.0 - (100.0 / (1.0 + rs));
+            rsi_values.push(rsi);
+        }
+
+        last_price = *price;
     }
 
+    rsi_values
 }
+
 
 
 #[cfg(test)]
@@ -27,7 +58,7 @@ mod tests {
             36.25, 36.59, 36.49, 36.39, 35.66, 35.99, 32.93, 30.98, 30.99, 32.15, 31.99, 32.34,
         ];
 
-        let result = relative_strength_index(&data, 14);
+        let result = relative_strength_index(&data);
         dbg!(&result);
         let expect = vec![23.0, 22.0];
 
