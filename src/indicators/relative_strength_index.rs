@@ -9,6 +9,9 @@ fn calc_mean(spread: &[f32]) -> f32 {
 // rsi = 100 - (100/ 1+(avg_gain/avg_loss))
 pub fn relative_strength_index(spread: &[f32]) -> Vec<f32> {
     let period = 14;
+    if spread.len() < period {
+        panic!("Spread Must Be A Length Of At Least 14")
+    }
     let mut gains = Vec::new();
     let mut losses = Vec::new();
 
@@ -60,19 +63,12 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "Spread Must Be A Length Of At Least 14")]
     fn test_rsi_error() {
         let data: Vec<f32> = vec![
-            35.56, 34.96, 33.72, 32.89, 34.36, 33.06, 31.05, 30.36, 30.89, 31.01, 32.19, 34.19,
+            35.56, 34.96, 33.72, 32.89, 34.36, 30.36, 30.89, 31.01, 32.19, 34.19, 30.0, 30.0
         ];
 
         let result = relative_strength_index(&data);
-        dbg!(&result);
-        let expect = vec![
-            49.35417, 53.87206, 58.01305, 55.710304, 47.594753, 53.512234, 64.43631, 72.01755,
-            72.5237, 67.69983, 66.944916, 61.62791, 62.721905, 53.140102, 51.70388, 49.259266,
-            36.338802, 34.605385, 37.34827, 42.254738, 40.41631, 35.794403,
-        ];
-
-        assert_eq!(result, expect);
     }
 }
