@@ -2,9 +2,7 @@ pub fn exponential_moving_average(spread: &[f32], period: usize) -> f32 {
     if spread.len() < period {
         panic!("Period For The EMA Is Out Of Bounds")
     }
-
     let mut ema = 0.0;
-    // Smoothing factor
     let mut alpha = 2.0 / (period as f32 + 1.0);
 
     // Inital SMA value for data set
