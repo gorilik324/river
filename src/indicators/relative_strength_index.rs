@@ -1,21 +1,14 @@
-fn calc_mean(spread: &[f32]) -> f32 {
-    let mut sum = 0.0;
-    for i in spread {
-        sum += i
-    }
-    sum / spread.len() as f32
-}
+use crate::indicators::simple_moving_average;
 
-// rsi = 100 - (100/ 1+(avg_gain/avg_loss))
 pub fn relative_strength_index(spread: &[f32]) -> Vec<f32> {
     let period = 14;
     if spread.len() < period {
         panic!("Spread Must Be A Length Of At Least 14")
     }
+
+    // Calculate gains and losses
     let mut gains = Vec::new();
     let mut losses = Vec::new();
-
-    // Remove last value, -1, as not to overflow the spread
     for i in 0..spread.len() - 1 {
         let diff = &spread[i + 1] - &spread[i];
         if diff > 0.0 {
@@ -27,11 +20,12 @@ pub fn relative_strength_index(spread: &[f32]) -> Vec<f32> {
         }
     }
 
+    // Caclulate rsi
     let mut rsi_line = Vec::new();
     let iterations = spread.len() - period;
     for i in 0..iterations {
-        let avg_gain = calc_mean(&gains[i..14 + i]);
-        let avg_loss = calc_mean(&losses[i..14 + i]);
+        let avg_gain = simple_moving_average(&gains[i..14 + i]);
+        let avg_loss = simple_moving_average(&losses[i..14 + i]);
         let rsi = 100.0 - (100.0 / (1.0 + (avg_gain / avg_loss)));
         rsi_line.push(rsi);
     }
@@ -50,7 +44,6 @@ mod tests {
             33.91, 35.87, 35.37, 36.11, 35.93, 34.53, 33.70, 33.95, 34.20, 35.38, 36.12, 35.35,
             36.25, 36.59, 36.49, 36.39, 35.66, 35.99, 32.93, 30.98, 30.99, 32.15, 31.99, 32.34,
         ];
-
         let result = relative_strength_index(&data);
         dbg!(&result);
         let expect = vec![
