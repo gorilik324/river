@@ -32,7 +32,7 @@ mod tests {
 
     #[test]
     fn test_macd_result() {
-        // Data from BTU, weekly bars, Mon Aug 08, 22 -> Mon Apr 10, 23
+        // Data from XLF, weekly bars, Mon Aug 08, 22 -> Mon Apr 10, 23
         // ... used trading view chart and indicator.
         let data: Vec<f32> = vec![
             35.56, 34.96, 33.72, 32.89, 34.36, 33.06, 31.05, 30.36, 30.89, 31.01, 32.19, 34.19,
